@@ -1,0 +1,159 @@
+/* App.css */
+:root {
+  --verde-principal: #2e7d32;
+  --verde-suave: #81c784;
+  --amarillo-suave: #fff176;
+  --gris-suave: #f0f4f1;
+  --blanco: #ffffff;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--gris-suave);
+}
+
+.App {
+  text-align: center;
+}
+
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: var(--blanco);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.navbar-title {
+  font-weight: bold;
+  color: var(--verde-principal);
+  font-size: 1.2rem;
+}
+
+.navbar-actions .btn {
+  margin-left: 1rem;
+}
+
+.btn {
+  border-radius: 20px;
+  padding: 0.6rem 1.4rem;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn.login {
+  background-color: var(--verde-suave);
+  border: none;
+  color: #fff;
+}
+
+.btn.login:hover {
+  background-color: var(--verde-principal);
+}
+
+.btn.register {
+  background-color: transparent;
+  border: 2px solid var(--verde-principal);
+  color: var(--verde-principal);
+}
+
+.btn.register:hover {
+  background-color: var(--verde-principal);
+  color: white;
+}
+
+.hero-section {
+  background-image: linear-gradient(
+      rgba(46, 125, 50, 0.6),
+      rgba(46, 125, 50, 0.6)
+    ),
+    url("../Img/fondo_2.jpg");
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  padding-top: 4rem;
+}
+
+.hero-content h1 {
+  font-size: 3rem;
+  color: var(--amarillo-suave);
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+}
+
+.hero-content p {
+  font-size: 1.2rem;
+  color: #fefefe;
+  margin-top: 1rem;
+}
+
+.section {
+  padding: 4rem 2rem;
+  background: linear-gradient(180deg, var(--gris-suave) 0%, var(--blanco) 100%);
+}
+
+.section.alt {
+  background-color: #ffffff;
+}
+
+.section h2 {
+  color: var(--verde-principal);
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.card-container {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+.card {
+  background: var(--blanco);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  max-width: 300px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.footer {
+  background-color: var(--verde-principal);
+  color: var(--amarillo-suave);
+  text-align: center;
+  padding: 2rem 1rem;
+  font-weight: 500;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,0 +1,136 @@
+/* src/SignUp.css */
+
+/* Contenedor principal de la página de registro (ahora como una página completa) */
+.signup-page-wrapper {
+  /* Eliminar position: fixed/absolute si quieres que se comporte como una página normal */
+  /* Mantener flexbox para centrar el formulario horizontal y verticalmente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* Asegura que ocupe al menos toda la altura de la ventana */
+  min-height: 100vh;
+
+  /* Fondo blanco para la página de registro */
+  background-color: white; /* <-- CAMBIADO DE RGBA A BLANCO */
+
+  /* Para que el contenido del formulario tenga un poco de espacio si la pantalla es pequeña */
+  padding: 20px;
+  box-sizing: border-box;
+
+  /* Puedes eliminar o ajustar el z-index si ya no es un overlay */
+  /* z-index: 1000; */
+}
+
+/* El resto de estilos de .signup-container, .signup-header, .close-btn, etc. se mantienen igual */
+/* ... (el resto de tu SignUp.css) ... */
+
+/* Contenedor del formulario de registro */
+.signup-container {
+  background-color: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 450px; /* Un poco más ancho si el formulario de registro es más largo */
+  box-sizing: border-box;
+  position: relative; /* Para posicionar el botón de cerrar */
+}
+
+/* Encabezado del formulario de registro */
+.signup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+/* Botón de cerrar */
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #888;
+  padding: 5px;
+  line-height: 1;
+  transition: color 0.3s ease;
+}
+
+.close-btn:hover {
+  color: #333;
+}
+
+/* Formulario */
+.signup-form .form-group {
+  margin-bottom: 15px;
+}
+
+.signup-form label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #333;
+}
+
+.signup-form .input-field {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.signup-form .input-field.error-input {
+  border-color: #dc3545; /* Rojo para errores */
+}
+
+.signup-form .error-message {
+  color: #dc3545;
+  font-size: 0.85em;
+  margin-top: 5px;
+}
+
+/* Botón de submit */
+.signup-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff; /* Un verde de ejemplo para registrarse */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 20px;
+}
+
+.signup-btn:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.signup-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* Pie del formulario (enlace a login) */
+.signup-footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.9em;
+  color: #666;
+}
+
+.login-link {
+  /* Clase para el enlace "Inicia sesión" */
+  color: #007bff; /* Azul de ejemplo */
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.login-link:hover {
+  color: #0056b3;
+}
