@@ -2,82 +2,142 @@ const pool = require("../config/db.config");
 const bcrypt = require("bcryptjs");
 
 const userModel = {
-  // Obtener todos los usuarios
-  findAll: async () => {
-    const query =
-      "SELECT u.*, r.nombre_rol FROM usuario u JOIN rol r ON u.id_rol = r.id_rol";
-    const { rows } = await pool.query(query);
-    return rows;
-  },
-
-  // Obtener usuario por ID
-  findById: async (id) => {
-    const query =
-      "SELECT u.*, r.nombre_rol FROM usuario u JOIN rol r ON u.id_rol = r.id_rol WHERE u.id_usuario = $1";
-    const { rows } = await pool.query(query, [id]);
-    return rows[0];
-  },
-
-  // Obtener usuario por email
   findByEmail: async (email) => {
-    const query =
-      "SELECT u.*, r.nombre_rol FROM usuario u JOIN rol r ON u.id_rol = r.id_rol WHERE u.email = $1";
-    const { rows } = await pool.query(query, [email]);
-    return rows[0];
+    try {
+      const result = await pool.query(
+        `SELECT
+           u.id_usuario, u.nombre, u.apellido, u.email, u.contrasena, u.telefono, u.estado, u.fecha_creacion, u.ultimo_acceso,
+           r.nombre_rol AS nombre_rol, u.id_rol
+         FROM
+           usuario AS u -- ¡Asegúrate de que 'usuario' esté en minúsculas!
+         JOIN
+           rol AS r ON u.id_rol = r.id_rol -- ¡Asegúrate de que 'rol' y 'id_rol' estén en minúsculas!
+         WHERE
+           u.email = $1`,
+        [email]
+      );
+      return result.rows[0];
+    } catch (error) {
+      console.error("Error al buscar usuario por email:", error);
+      throw error;
+    }
   },
 
-  // Crear usuario
+  findById: async (id) => {
+    try {
+      const result = await pool.query(
+        `SELECT
+           u.id_usuario, u.nombre, u.apellido, u.email, u.contrasena, u.telefono, u.estado, u.fecha_creacion, u.ultimo_acceso,
+           r.nombre_rol AS nombre_rol, u.id_rol
+         FROM
+           usuario AS u -- ¡Minúsculas!
+         JOIN
+           rol AS r ON u.id_rol = r.id_rol -- ¡Minúsculas!
+         WHERE
+           u.id_usuario = $1`,
+        [id]
+      );
+      return result.rows[0];
+    } catch (error) {
+      console.error("Error al buscar usuario por ID:", error);
+      throw error;
+    }
+  },
+
   create: async (userData) => {
-    const { nombre, apellido, email, contrasena, telefono, id_rol } = userData;
-
-    // Encriptar contraseña
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(contrasena, salt);
-
-    const query = `
-      INSERT INTO usuario (nombre, apellido, email, contrasena, telefono, estado, fecha_creacion, id_rol)
-      VALUES ($1, $2, $3, $4, $5, 'Activo', CURRENT_DATE, $6)
-      RETURNING *
-    `;
-
-    const values = [nombre, apellido, email, hashedPassword, telefono, id_rol];
-    const { rows } = await pool.query(query, values);
-    return rows[0];
+    try {
+      const { nombre, apellido, email, contrasena, telefono, id_rol, estado } =
+        userData;
+      const hashedPassword = await bcrypt.hash(contrasena, 10);
+      const result = await pool.query(
+        `INSERT INTO usuario (nombre, apellido, email, contrasena, telefono, id_rol, estado) -- ¡Minúsculas para todo!
+         VALUES ($1, $2, $3, $4, $5, $6, $7)
+         RETURNING id_usuario, nombre, apellido, email, telefono, id_rol, estado;`,
+        [
+          nombre,
+          apellido,
+          email,
+          hashedPassword,
+          telefono,
+          id_rol,
+          estado || "Activo",
+        ]
+      );
+      return result.rows[0];
+    } catch (error) {
+      console.error("Error al crear usuario:", error);
+      throw error;
+    }
   },
 
-  // Actualizar usuario
+  findAllUsers: async () => {
+    try {
+      const result = await pool.query(
+        `SELECT
+           u.id_usuario, u.nombre, u.apellido, u.email, u.telefono, u.estado, u.fecha_creacion, u.ultimo_acceso,
+           r.nombre_rol AS rol, r.id_rol as id_rol
+         FROM
+           usuario AS u -- ¡Minúsculas!
+         JOIN
+           rol AS r ON u.id_rol = r.id_rol -- ¡Minúsculas!
+         ORDER BY
+           u.nombre ASC`
+      );
+      return result.rows;
+    } catch (error) {
+      console.error("Error al obtener todos los usuarios:", error);
+      throw error;
+    }
+  },
+
   update: async (id, userData) => {
-    const { nombre, apellido, email, telefono, estado, id_rol } = userData;
+    const { nombre, apellido, email, telefono, id_rol, estado, contrasena } =
+      userData;
+    let query = `UPDATE usuario SET -- ¡Minúsculas!
+                     nombre = COALESCE($1, nombre),
+                     apellido = COALESCE($2, apellido),
+                     email = COALESCE($3, email),
+                     telefono = COALESCE($4, telefono),
+                     id_rol = COALESCE($5, id_rol),
+                     estado = COALESCE($6, estado)
+                   WHERE id_usuario = $7 -- ¡Minúsculas!
+                   RETURNING *;`;
+    let values = [nombre, apellido, email, telefono, id_rol, estado, id];
 
-    const query = `
-      UPDATE usuario 
-      SET nombre = $1, apellido = $2, email = $3, telefono = $4, estado = $5, id_rol = $6
-      WHERE id_usuario = $7
-      RETURNING *
-    `;
+    if (contrasena) {
+      query = `UPDATE usuario SET -- ¡Minúsculas!
+                     nombre = COALESCE($1, nombre),
+                     apellido = COALESCE($2, apellido),
+                     email = COALESCE($3, email),
+                     contrasena = $8, -- La contraseña ya viene hasheada desde el controlador
+                     telefono = COALESCE($4, telefono),
+                     id_rol = COALESCE($5, id_rol),
+                     estado = COALESCE($6, estado)
+                   WHERE id_usuario = $7 -- ¡Minúsculas!
+                   RETURNING *;`;
+      values.push(contrasena);
+    }
 
-    const values = [nombre, apellido, email, telefono, estado, id_rol, id];
-    const { rows } = await pool.query(query, values);
-    return rows[0];
+    try {
+      const result = await pool.query(query, values);
+      return result.rows[0];
+    } catch (error) {
+      console.error("Error al actualizar usuario:", error);
+      throw error;
+    }
   },
 
-  // Actualizar contraseña
-  updatePassword: async (id, newPassword) => {
-    // Encriptar contraseña
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(newPassword, salt);
-
-    const query =
-      "UPDATE usuario SET contrasena = $1 WHERE id_usuario = $2 RETURNING *";
-    const { rows } = await pool.query(query, [hashedPassword, id]);
-    return rows[0];
-  },
-
-  // Eliminar usuario
   delete: async (id) => {
-    const query = "DELETE FROM usuario WHERE id_usuario = $1 RETURNING *";
-    const { rows } = await pool.query(query, [id]);
-    return rows[0];
+    try {
+      const result = await pool.query(
+        "DELETE FROM usuario WHERE id_usuario = $1 RETURNING id_usuario;", // ¡Minúsculas!
+        [id]
+      );
+      return result.rowCount;
+    } catch (error) {
+      console.error("Error al eliminar usuario:", error);
+      throw error;
+    }
   },
 };
 

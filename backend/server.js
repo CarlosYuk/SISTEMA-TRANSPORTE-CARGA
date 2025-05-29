@@ -1,59 +1,32 @@
+// backend/app.js (o server.js)
 const express = require("express");
 const cors = require("cors");
-const helmet = require("helmet");
-const morgan = require("morgan");
 require("dotenv").config();
-
-// Importar rutas
-const authRoutes = require("./routes/auth.routes");
-const userRoutes = require("./routes/user.routes");
-//const vehicleRoutes = require("./routes/vehicle.routes");
-//const routeRoutes = require("./routes/route.routes");
-//const cargoRoutes = require("./routes/cargo.routes");
-//const requestRoutes = require("./routes/request.routes");
-//const incidentRoutes = require("./routes/incident.routes");
-//const reportRoutes = require("./routes/report.routes");
-//const notificationRoutes = require("./routes/notification.routes");
-//const reviewRoutes = require("./routes/review.routes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
+// Importar rutas
+const authRoutes = require("./routes/auth.routes");
+const userRoutes = require("./routes/user.routes"); // <--- ¡Importa las rutas de usuario!
+
+// Middlewares
 app.use(cors());
-app.use(helmet());
-app.use(morgan("dev"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json()); // Para parsear el body de las peticiones JSON
 
-// Rutas
+// Usar rutas
 app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
-//app.use("/api/vehicles", vehicleRoutes);
-//app.use("/api/routes", routeRoutes);
-//app.use("/api/cargo", cargoRoutes);
-//app.use("/api/requests", requestRoutes);
-//app.use("/api/incidents", incidentRoutes);
-//app.use("/api/reports", reportRoutes);
-//app.use("/api/notifications", notificationRoutes);
-//app.use("/api/reviews", reviewRoutes);
+app.use("/api/users", userRoutes); // <--- ¡Usa las rutas de usuario!
 
-// Ruta raíz
-app.get("/", (req, res) => {
-  res.json({ message: "API del Sistema de Transporte de Carga Pesada" });
-});
-
-// Manejo de errores
+// Manejador de errores global
 app.use((err, req, res, next) => {
-  const statusCode = err.statusCode || 500;
-  console.error(err.message, err.stack);
-  res.status(statusCode).json({
-    message: err.message,
-    stack: process.env.NODE_ENV === "production" ? "🥞" : err.stack,
+  console.error(err.stack);
+  res.status(err.status || 500).json({
+    message: err.message || "Ocurrió un error en el servidor",
+    error: process.env.NODE_ENV === "development" ? err : {}, // En producción, no envíes detalles del error
   });
 });
 
-// Iniciar servidor
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`Servidor backend corriendo en el puerto ${PORT}`);
 });

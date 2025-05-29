@@ -1,24 +1,22 @@
+// backend/config/db.config.js
 const { Pool } = require("pg");
 require("dotenv").config();
 
 const pool = new Pool({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
   user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_DATABASE,
   password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  max: 20,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
+  port: process.env.DB_PORT,
 });
 
-// Probar la conexión
-pool.connect((err, client, release) => {
+pool.connect((err, client, done) => {
   if (err) {
-    return console.error("Error al conectar a PostgreSQL:", err.stack);
+    console.error("Error al conectar a PostgreSQL:", err);
+    return;
   }
   console.log("Conexión a PostgreSQL establecida con éxito");
-  release();
+  client.release();
 });
 
-module.exports = pool;
+module.exports = pool; // Exporta el pool directamente, sin un objeto
