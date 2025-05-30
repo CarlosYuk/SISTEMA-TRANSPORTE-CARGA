@@ -10,6 +10,7 @@ import VehicleManagement from "../components/VehicleManagement";
 // import ClientRequests from "../components/ClientRequests";
 
 import "../AdminDashboard.css"; // Asegúrate de que este archivo CSS existe
+import "../App.css"; // Importa tu CSS global si es necesario
 const AdminDashboard = () => {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();

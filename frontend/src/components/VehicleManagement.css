@@ -1,0 +1,158 @@
+/* frontend/src/components/VehicleManagement.css */
+
+.vehicle-management {
+  padding: 20px;
+  background-color: #ffffff; /* Fondo blanco para el contenido de la sección */
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-top: 20px; /* Separación del título del dashboard */
+}
+
+.vehicle-management h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 25px;
+}
+
+.btn.btn-primary.mb-3 {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-bottom: 20px;
+  transition: background-color 0.3s ease;
+}
+
+.btn.btn-primary.mb-3:hover {
+  background-color: #218838;
+}
+
+.table-responsive {
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+.table.table-striped {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.table.table-striped th,
+.table.table-striped td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.table.table-striped th {
+  background-color: #e2e6ea;
+  color: #333;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.table.table-striped tbody tr:nth-child(even) {
+  background-color: #f8f9fa; /* Ligeramente más oscuro para filas pares */
+}
+
+.table.table-striped tbody tr:hover {
+  background-color: #e9ecef;
+}
+
+.table.table-striped tbody td {
+  font-size: 14px;
+}
+
+/* Estilos para las imágenes de vehículos */
+.table.table-striped tbody td img {
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+/* Estilos para botones de acción */
+.btn.btn-sm.btn-info.me-2,
+.btn.btn-sm.btn-danger {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 5px;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.btn.btn-sm.btn-info.me-2 {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn.btn-sm.btn-info.me-2:hover {
+  background-color: #0056b3;
+}
+
+.btn.btn-sm.btn-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn.btn-sm.btn-danger:hover {
+  background-color: #c82333;
+}
+
+/* Mensaje para tabla vacía */
+.text-center {
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+  padding: 30px;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .vehicle-management {
+    padding: 15px;
+  }
+
+  .table.table-striped th,
+  .table.table-striped td {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .btn.btn-sm.btn-info.me-2,
+  .btn.btn-sm.btn-danger {
+    padding: 6px 10px;
+    font-size: 12px;
+    margin-bottom: 5px;
+  }
+
+  .table.table-striped tbody td img {
+    width: 40px !important;
+    height: 40px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .vehicle-management h2 {
+    font-size: 1.5rem;
+  }
+
+  .btn.btn-primary.mb-3 {
+    width: 100%;
+    padding: 12px;
+  }
+
+  .table.table-striped {
+    font-size: 11px;
+  }
+
+  .table.table-striped th,
+  .table.table-striped td {
+    padding: 6px;
+  }
+}

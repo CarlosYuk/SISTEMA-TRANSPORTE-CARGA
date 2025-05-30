@@ -4,8 +4,8 @@ import Modal from "react-modal";
 import { AuthContext } from "../context/AuthContext";
 import vehicleService from "../services/vehicleService";
 import { toast } from "react-toastify";
-
-
+import "../App.css";
+import "../AdminDashboard.css";
 // ... (customStyles y Modal.setAppElement('#root'))
 const customStyles = {
   content: {

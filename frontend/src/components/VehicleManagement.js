@@ -4,6 +4,7 @@ import { AuthContext } from "../context/AuthContext";
 import vehicleService from "../services/vehicleService";
 import { toast } from "react-toastify";
 import VehicleFormModal from "./VehicleFormModal";
+import "./VehicleManagement.css";
 
 const VehicleManagement = () => {
   const { token } = useContext(AuthContext);

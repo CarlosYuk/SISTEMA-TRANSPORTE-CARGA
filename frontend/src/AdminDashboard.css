@@ -1,29 +1,57 @@
-/* frontend/src/AdminDashboard.css */
+/* AdminDashboard.css */
 
-.admin-dashboard-container {
-  display: flex;
-  min-height: 100vh;
-  background-color: #f0f2f5; /* Un color de fondo suave para todo el dashboard */
+/* Reset y configuración base */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-.admin-sidebar {
-  width: 250px;
-  background-color: #343a40; /* Color oscuro para la barra lateral */
-  color: white;
-  padding: 20px;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+/* Layout principal del dashboard */
+.admin-dashboard-layout {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between; /* Para empujar el botón de logout al final */
+  min-height: 100vh;
+  background-color: #f5f6fa;
+}
+
+/* Sidebar - Panel lateral */
+.admin-sidebar {
+  width: 280px;
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  color: white;
+  position: fixed;
+  height: 100vh;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  padding: 0;
+  overflow-y: auto;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
 }
 
 .admin-sidebar h2 {
   text-align: center;
-  color: #fff;
-  margin-bottom: 30px;
-  font-size: 1.8em;
+  padding: 25px 20px 20px;
+  font-size: 18px;
+  font-weight: 600;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 15px;
+  background: rgba(0, 0, 0, 0.1);
+  margin-bottom: 0;
+}
+
+.sidebar-welcome-text {
+  text-align: center;
+  padding: 15px 20px;
+  font-size: 14px;
+  color: #bdc3c7;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Navegación del sidebar */
+.admin-sidebar nav {
+  padding: 0;
 }
 
 .admin-sidebar nav ul {
@@ -33,70 +61,211 @@
 }
 
 .admin-sidebar nav ul li {
-  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .admin-sidebar nav ul li button {
   width: 100%;
-  padding: 12px 15px;
-  background-color: transparent;
-  color: white;
+  background: none;
   border: none;
+  color: white;
+  padding: 18px 25px;
   text-align: left;
-  font-size: 1.1em;
   cursor: pointer;
-  border-radius: 5px;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  font-size: 15px;
+  font-weight: 400;
+  transition: all 0.3s ease;
+  position: relative;
 }
 
-.admin-sidebar nav ul li button:hover,
-.admin-sidebar nav ul li button.active {
-  /* Para resaltar la sección activa */
-  background-color: #007bff; /* Un azul brillante para el hover/activo */
-  color: white;
+.admin-sidebar nav ul li button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  padding-left: 30px;
+  transform: translateX(5px);
 }
 
+.admin-sidebar nav ul li button:active {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Botón de logout */
 .logout-btn {
-  width: 100%;
-  padding: 12px 15px;
-  background-color: #dc3545; /* Rojo para el botón de cerrar sesión */
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  background: #e74c3c;
   color: white;
   border: none;
-  border-radius: 5px;
+  padding: 12px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 1.1em;
-  margin-top: 30px;
-  transition: background-color 0.3s ease;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(231, 76, 60, 0.3);
 }
 
 .logout-btn:hover {
-  background-color: #c82333;
+  background: #c0392b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(231, 76, 60, 0.4);
 }
 
+.logout-btn:active {
+  transform: translateY(0);
+}
+
+/* Contenido principal */
 .admin-content {
-  flex-grow: 1; /* Ocupa el espacio restante */
+  margin-left: 280px; /* Mismo ancho que el sidebar */
   padding: 30px;
-  background-color: #f9f9f9; /* Fondo claro para el área de contenido */
-  overflow-y: auto; /* Para permitir scroll si el contenido es largo */
+  width: calc(100% - 280px);
+  min-height: 100vh;
+  background-color: #f5f6fa;
 }
 
 .admin-content h1 {
-  color: #333;
+  color: #2c3e50;
+  font-size: 28px;
+  font-weight: 600;
   margin-bottom: 30px;
-  text-align: center;
+  padding-bottom: 15px;
+  border-bottom: 3px solid #3498db;
+  display: inline-block;
 }
 
+/* Dashboard summary */
 .dashboard-summary {
-  background-color: white;
-  padding: 25px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  text-align: center;
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e1e8ed;
 }
 
 .dashboard-summary h3 {
-  color: #007bff;
+  color: #2c3e50;
+  font-size: 22px;
   margin-bottom: 15px;
+  font-weight: 600;
 }
 
-/* Puedes añadir más estilos para otras secciones a medida que las implementes */
+.dashboard-summary p {
+  color: #5a6c7d;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* Estilos para secciones de contenido */
+.admin-content > div {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e1e8ed;
+  margin-bottom: 20px;
+}
+
+.admin-content > div h3 {
+  color: #2c3e50;
+  font-size: 22px;
+  margin-bottom: 20px;
+  font-weight: 600;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #ecf0f1;
+}
+
+.admin-content > div p {
+  color: #5a6c7d;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .admin-sidebar {
+    width: 250px;
+  }
+
+  .admin-content {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-sidebar {
+    transform: translateX(-100%);
+    width: 280px;
+  }
+
+  .admin-sidebar.active {
+    transform: translateX(0);
+  }
+
+  .admin-content {
+    margin-left: 0;
+    width: 100%;
+    padding: 20px 15px;
+  }
+
+  .admin-content h1 {
+    font-size: 24px;
+  }
+
+  /* Botón de menú para móviles */
+  .mobile-menu-btn {
+    display: block;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1001;
+    background: #2c3e50;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 18px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-menu-btn {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-content {
+    padding: 15px 10px;
+  }
+
+  .admin-content h1 {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+
+  .dashboard-summary,
+  .admin-content > div {
+    padding: 20px;
+  }
+
+  .admin-sidebar h2 {
+    font-size: 16px;
+    padding: 20px 15px 15px;
+  }
+
+  .sidebar-welcome-text {
+    padding: 12px 15px;
+    font-size: 13px;
+  }
+
+  .admin-sidebar nav ul li button {
+    padding: 15px 20px;
+    font-size: 14px;
+  }
+}
