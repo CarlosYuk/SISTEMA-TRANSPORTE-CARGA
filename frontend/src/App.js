@@ -1,5 +1,6 @@
 // frontend/src/App.js
 import React from "react";
+
 import {
   BrowserRouter as Router,
   Routes,
@@ -19,7 +20,7 @@ import SignupPage from "./pages/SignUp";
 import AdminDashboard from "./pages/AdminDashboard";
 import OperatorDashboard from "./pages/OperatorDashboard";
 import ClientDashboard from "./pages/ClientDashboard";
-
+import VehicleManagement from "./components/VehicleManagement";
 import "./App.css";
 
 const PrivateRoute = ({ children, allowedRoleNames }) => {
@@ -54,6 +55,22 @@ function App() {
 
             {/* Rutas protegidas */}
             <Route
+              path="/dashboard"
+              element={
+                <PrivateRoute
+                  allowedRoleNames={[
+                    "Administrador",
+                    "Operador de Tráfico",
+                    "Conductor",
+                    "Cliente",
+                  ]}
+                >
+                  <AdminDashboard />
+                </PrivateRoute>
+              }
+            />
+
+            <Route
               path="/admin"
               element={
                 <PrivateRoute allowedRoleNames={["Administrador"]}>
@@ -61,6 +78,16 @@ function App() {
                 </PrivateRoute>
               }
             />
+            {/* ESTA ES LA RUTA QUE NECESITAS AGREGAR O VERIFICAR */}
+            <Route
+              path="/vehicles"
+              element={
+                <PrivateRoute allowedRoleNames={["Administrador"]}>
+                  <VehicleManagement /> {/* ¡Aquí es donde lo usas! */}
+                </PrivateRoute>
+              }
+            />
+
             <Route
               path="/operator"
               element={
@@ -83,15 +110,7 @@ function App() {
         </AuthProvider>
       </Router>
       <ToastContainer
-        position="bottom-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
+      // ... (props de ToastContainer) ...
       />
     </div>
   );

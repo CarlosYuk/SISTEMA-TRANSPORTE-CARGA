@@ -5,7 +5,6 @@ import { AuthContext } from "../context/AuthContext";
 import { toast } from "react-toastify";
 import UserFormModal from "./UserFormModal";
 import "./UserManagement.css";
-
 // Configura el elemento root de la aplicación para el modal
 import Modal from "react-modal"; // Asegúrate de importar Modal aquí también para configurar setAppElement
 Modal.setAppElement("#root"); // Asume que tu index.html tiene <div id="root"></div>

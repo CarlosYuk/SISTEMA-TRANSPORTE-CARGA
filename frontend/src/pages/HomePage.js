@@ -1,9 +1,9 @@
 // src/pages/HomePage.js
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // Importamos useNavigate para la navegación
-import AOS from 'aos';
-import 'aos/dist/aos.css';
-import '../App.css'; // Asegúrate de que los estilos generales de la app, como los de la barra de navegación, estén accesibles.
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // Importamos useNavigate para la navegación
+import AOS from "aos";
+import "aos/dist/aos.css";
+import "../App.css"; // Asegúrate de que los estilos generales de la app, como los de la barra de navegación, estén accesibles.
 
 function HomePage() {
   const navigate = useNavigate(); // Hook para la navegación programática
@@ -17,10 +17,10 @@ function HomePage() {
       <nav className="navbar">
         <div className="navbar-title">SHOBOL S.A</div>
         <div className="navbar-actions">
-          <button className="btn login" onClick={() => navigate('/login')}>
+          <button className="btn login" onClick={() => navigate("/login")}>
             Iniciar Sesión
           </button>
-          <button className="btn register" onClick={() => navigate('/signup')}>
+          <button className="btn register" onClick={() => navigate("/signup")}>
             Registrarse
           </button>
         </div>

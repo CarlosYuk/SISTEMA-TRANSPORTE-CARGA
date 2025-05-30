@@ -1,80 +1,44 @@
 // frontend/src/pages/AdminDashboard.js
 import React, { useState, useContext } from "react";
+import Sidebar from "../components/Sidebar";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import UserManagement from "../components/UserManagement"; // Importa el componente de gestión de usuarios
-import "../AdminDashboard.css"; // Crea este archivo CSS para estilos del dashboard
+import UserManagement from "../components/UserManagement";
+import VehicleManagement from "../components/VehicleManagement";
+// Importa otros componentes de gestión si los tienes (ej. RouteManagement, ClientRequests, etc.)
+// import RouteManagement from "../components/RouteManagement";
+// import ClientRequests from "../components/ClientRequests";
 
+import "../AdminDashboard.css"; // Asegúrate de que este archivo CSS existe
 const AdminDashboard = () => {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [activeSection, setActiveSection] = useState("users"); // Estado para la sección activa
+  // Usa un solo estado para la sección activa
+  const [activeSection, setActiveSection] = useState("dashboard"); // Estado inicial
 
+  // Manejador para cerrar sesión
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
 
+  // Redireccionar si el usuario no es un administrador o no está autenticado
+  // Esta lógica ya está en PrivateRoute, pero es una buena práctica tenerla aquí también
   if (!user || user.rol !== "Administrador") {
-    return <p>Acceso denegado. Solo administradores.</p>;
+    // Si llegas aquí, PrivateRoute ya debería haberte redirigido,
+    // pero si por alguna razón no lo hizo, esto actuará como un fallback.
+    // Podrías redirigir o mostrar un mensaje.
+    // navigate('/login'); // O redirigir a una página de acceso denegado
+    return (
+      <p>Acceso denegado. Solo los administradores pueden ver esta página.</p>
+    );
   }
 
-  return (
-    <div className="admin-dashboard-container">
-      <aside className="admin-sidebar">
-        <h2>Panel de Administrador</h2>
-        <nav>
-          <ul>
-            <li>
-              <button onClick={() => setActiveSection("dashboard")}>
-                Dashboard
-              </button>
-            </li>
-            <li>
-              <button onClick={() => setActiveSection("users")}>
-                Gestión de Usuarios
-              </button>
-            </li>
-            <li>
-              <button onClick={() => setActiveSection("vehicles")}>
-                Gestión de Vehículos
-              </button>
-            </li>
-            <li>
-              <button onClick={() => setActiveSection("routes")}>
-                Gestión de Rutas
-              </button>
-            </li>
-            <li>
-              <button onClick={() => setActiveSection("requests")}>
-                Solicitudes de Clientes
-              </button>
-            </li>
-            <li>
-              <button onClick={() => setActiveSection("incidents")}>
-                Incidencias
-              </button>
-            </li>
-            <li>
-              <button onClick={() => setActiveSection("reports")}>
-                Reportes
-              </button>
-            </li>
-            <li>
-              <button onClick={() => setActiveSection("reviews")}>
-                Reseñas
-              </button>
-            </li>
-          </ul>
-        </nav>
-        <button onClick={handleLogout} className="logout-btn">
-          Cerrar Sesión
-        </button>
-      </aside>
-
-      <main className="admin-content">
-        <h1>Bienvenido, {user.nombre}!</h1>
-        {activeSection === "dashboard" && (
+  // Función para renderizar el componente activo según el estado 'activeSection'
+  const renderActiveContent = () => {
+    switch (activeSection) {
+      case "dashboard":
+        return (
           <div className="dashboard-summary">
             <h3>Resumen General</h3>
             <p>
@@ -82,45 +46,70 @@ const AdminDashboard = () => {
             </p>
             {/* Aquí irían los widgets de resumen */}
           </div>
-        )}
-        {activeSection === "users" && <UserManagement />}{" "}
-        {/* Renderiza el componente de gestión de usuarios */}
-        {activeSection === "vehicles" && (
-          <div>
-            <h3>Gestión de Vehículos</h3>
-            <p>Contenido de gestión de vehículos.</p>
-          </div>
-        )}
-        {activeSection === "routes" && (
+        );
+      case "users":
+        return <UserManagement />;
+      case "vehicles":
+        return <VehicleManagement />; // Renderiza VehicleManagement cuando la sección activa es 'vehicles'
+      case "routes":
+        // return <RouteManagement />; // Descomenta y crea este componente cuando sea necesario
+        return (
           <div>
             <h3>Gestión de Rutas</h3>
             <p>Contenido de gestión de rutas.</p>
           </div>
-        )}
-        {activeSection === "requests" && (
+        );
+      case "requests":
+        // return <ClientRequests />; // Descomenta y crea este componente cuando sea necesario
+        return (
           <div>
             <h3>Solicitudes de Clientes</h3>
             <p>Contenido de solicitudes.</p>
           </div>
-        )}
-        {activeSection === "incidents" && (
+        );
+      case "incidents":
+        return (
           <div>
             <h3>Incidencias</h3>
             <p>Contenido de incidencias.</p>
           </div>
-        )}
-        {activeSection === "reports" && (
+        );
+      case "reports":
+        return (
           <div>
             <h3>Reportes</h3>
             <p>Contenido de reportes.</p>
           </div>
-        )}
-        {activeSection === "reviews" && (
+        );
+      case "reviews":
+        return (
           <div>
             <h3>Reseñas</h3>
             <p>Contenido de reseñas.</p>
           </div>
-        )}
+        );
+      default:
+        return (
+          <div className="dashboard-summary">
+            <h3>Resumen General</h3>
+            <p>Selecciona una opción del menú lateral.</p>
+          </div>
+        );
+    }
+  };
+
+  return (
+    <div className="admin-dashboard-layout">
+      {/* Pasa la función `setActiveSection` al Sidebar para que pueda cambiar el estado */}
+      <Sidebar
+        setActiveSection={setActiveSection} // Asegúrate de que Sidebar acepte esta prop
+        handleLogout={handleLogout} // También puedes pasar handleLogout al Sidebar
+        user={user} // Pasar usuario para mostrar su nombre
+      />
+      <main className="admin-content">
+        <h1>Bienvenido, {user.nombre}!</h1>{" "}
+        {/* Muestra el nombre del usuario */}
+        {renderActiveContent()} {/* Renderiza el contenido dinámico */}
       </main>
     </div>
   );
