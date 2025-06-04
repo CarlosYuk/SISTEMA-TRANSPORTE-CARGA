@@ -1,32 +1,16 @@
 import React, { useState, useEffect, useCallback } from "react";
 
-const Sidebar = ({
-  setActiveSection,
-  handleLogout,
-  user,
-  allowedSections = [
-    "dashboard",
-    "users",
-    "vehicles",
-    "routes",
-    "requests",
-    "incidents",
-    "reports",
-    "reviews",
-  ], // Secciones permitidas (default: todas)
-}) => {
+const OperatorSidebar = ({ setActiveSection, handleLogout, user }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeItem, setActiveItem] = useState("dashboard");
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-  // Actualiza ancho de ventana para responsive
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Cambiar sección activa
   const handleSectionChange = useCallback(
     (section) => {
       setActiveSection(section);
@@ -38,16 +22,14 @@ const Sidebar = ({
     [setActiveSection, windowWidth]
   );
 
-  // Toggle menú móvil
   const toggleMobileMenu = useCallback(() => {
     setIsMobileMenuOpen((prev) => !prev);
   }, []);
 
-  // Cerrar menú móvil si clic fuera
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (windowWidth <= 768 && isMobileMenuOpen) {
-        const sidebar = document.querySelector(".admin-sidebar");
+        const sidebar = document.querySelector(".operator-sidebar");
         const menuBtn = document.querySelector(".mobile-menu-btn");
         if (
           sidebar &&
@@ -63,26 +45,16 @@ const Sidebar = ({
     return () => document.removeEventListener("click", handleClickOutside);
   }, [isMobileMenuOpen, windowWidth]);
 
-  // Items completos del menú
+  // Menú reducido para operador (sin administración)
   const menuItems = [
     { key: "dashboard", label: "Dashboard", icon: "📊" },
     { key: "users", label: "Gestión de Usuarios", icon: "👥" },
     { key: "vehicles", label: "Gestión de Vehículos", icon: "🚗" },
     { key: "routes", label: "Gestión de Rutas", icon: "🗺️" },
-    { key: "requests", label: "Solicitudes de Clientes", icon: "📋" },
-    { key: "incidents", label: "Incidencias", icon: "⚠️" },
-    { key: "reports", label: "Reportes", icon: "📊" },
-    { key: "reviews", label: "Reseñas", icon: "⭐" },
   ];
-
-  // Filtrar solo las secciones permitidas
-  const filteredMenuItems = menuItems.filter((item) =>
-    allowedSections.includes(item.key)
-  );
 
   return (
     <>
-      {/* Botón menú móvil */}
       <button
         className="mobile-menu-btn"
         onClick={toggleMobileMenu}
@@ -91,7 +63,6 @@ const Sidebar = ({
         ☰
       </button>
 
-      {/* Overlay móvil */}
       {isMobileMenuOpen && windowWidth <= 768 && (
         <div
           className="mobile-overlay"
@@ -108,14 +79,14 @@ const Sidebar = ({
         />
       )}
 
-      <aside className={`admin-sidebar ${isMobileMenuOpen ? "active" : ""}`}>
-        <h2>Panel de Administrador</h2>
+      <aside className={`operator-sidebar ${isMobileMenuOpen ? "active" : ""}`}>
+        <h2>Panel del Operador</h2>
 
         {user && <p className="sidebar-welcome-text">Hola, {user.nombre}!</p>}
 
         <nav aria-label="Menú principal">
           <ul>
-            {filteredMenuItems.map((item) => (
+            {menuItems.map((item) => (
               <li key={item.key}>
                 <button
                   onClick={() => handleSectionChange(item.key)}
@@ -129,11 +100,7 @@ const Sidebar = ({
                       activeItem === item.key ? "4px solid #3498db" : "none",
                   }}
                 >
-                  <span
-                    className="menu-icon"
-                    style={{ marginRight: "10px" }}
-                    aria-hidden="true"
-                  >
+                  <span className="menu-icon" style={{ marginRight: "10px" }}>
                     {item.icon}
                   </span>
                   {item.label}
@@ -152,4 +119,4 @@ const Sidebar = ({
   );
 };
 
-export default Sidebar;
+export default OperatorSidebar;

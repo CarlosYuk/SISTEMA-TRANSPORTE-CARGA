@@ -1,9 +1,7 @@
-// frontend/src/components/UserFormModal.js
 import React, { useState, useEffect } from "react";
-import Modal from "react-modal"; // Asegúrate de tener instalado react-modal
+import Modal from "react-modal";
 
-// Configura el elemento root de la aplicación para el modal
-Modal.setAppElement("#root"); // Asume que tu index.html tiene <div id="root"></div>
+Modal.setAppElement("#root");
 
 const UserFormModal = ({
   isOpen,
@@ -11,6 +9,7 @@ const UserFormModal = ({
   onSave,
   initialData,
   roles,
+  restrictAdminActions = false, // Nueva prop
 }) => {
   const [formData, setFormData] = useState({
     nombre: "",
@@ -28,7 +27,7 @@ const UserFormModal = ({
         nombre: initialData.nombre || "",
         apellido: initialData.apellido || "",
         email: initialData.email || "",
-        contrasena: "", // No precargar la contraseña por seguridad
+        contrasena: "", // Por seguridad no precargamos contraseña
         telefono: initialData.telefono || "",
         id_rol: initialData.id_rol || "",
         estado: initialData.estado || "Activo",
@@ -40,24 +39,24 @@ const UserFormModal = ({
         email: "",
         contrasena: "",
         telefono: "",
-        id_rol: roles.length > 0 ? roles[0].id_rol : "", // Valor por defecto si hay roles
+        id_rol: restrictAdminActions
+          ? "3"
+          : roles.length > 0
+          ? roles[0].id_rol
+          : "", // Si es operador de tráfico, se asigna 'Cliente' como predeterminado
         estado: "Activo",
       });
     }
-  }, [initialData, roles]); // Añadir roles como dependencia
+  }, [initialData, roles, restrictAdminActions]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (initialData && !formData.contrasena) {
-      // Si estamos editando y no se proporciona nueva contraseña, eliminarla del objeto
       const { contrasena, ...dataToSend } = formData;
       onSave(dataToSend);
     } else {
@@ -70,8 +69,8 @@ const UserFormModal = ({
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       contentLabel={initialData ? "Editar Usuario" : "Crear Usuario"}
-      className="user-form-modal" // Clases CSS para el modal
-      overlayClassName="user-form-overlay" // Clases CSS para el overlay
+      className="user-form-modal"
+      overlayClassName="user-form-overlay"
     >
       <h3>{initialData ? "Editar Usuario" : "Crear Nuevo Usuario"}</h3>
       <form onSubmit={handleSubmit}>
@@ -103,10 +102,10 @@ const UserFormModal = ({
             value={formData.email}
             onChange={handleChange}
             required
-            disabled={!!initialData} // Email no editable si se está editando
+            disabled={!!initialData} // No se edita email al modificar
           />
         </div>
-        {!initialData && ( // Contraseña solo requerida al crear
+        {!initialData && (
           <div className="form-group">
             <label>Contraseña:</label>
             <input
@@ -118,7 +117,7 @@ const UserFormModal = ({
             />
           </div>
         )}
-        {initialData && ( // Opción de cambiar contraseña al editar
+        {initialData && (
           <div className="form-group">
             <label>Nueva Contraseña (opcional):</label>
             <input
@@ -148,14 +147,27 @@ const UserFormModal = ({
             required
           >
             <option value="">Selecciona un rol</option>
-            {roles.map((role) => (
-              <option key={role.id_rol} value={role.id_rol}>
-                {role.nombre_rol}
-              </option>
-            ))}
+            {roles.map((role) => {
+              const isAdminRole = role.nombre_rol === "Administrador";
+              const disabled = restrictAdminActions && isAdminRole;
+              return (
+                <option
+                  key={role.id_rol}
+                  value={role.id_rol}
+                  disabled={disabled}
+                  title={
+                    disabled
+                      ? "No tienes permiso para asignar el rol Administrador"
+                      : ""
+                  }
+                >
+                  {role.nombre_rol}
+                </option>
+              );
+            })}
           </select>
         </div>
-        {initialData && ( // Estado solo visible al editar
+        {initialData && (
           <div className="form-group">
             <label>Estado:</label>
             <select

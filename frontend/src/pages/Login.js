@@ -1,4 +1,3 @@
-// frontend/src/pages/Login.js
 import { useState, useContext, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from "formik";
@@ -24,18 +23,16 @@ const Login = () => {
   const redirectToDashboard = useCallback(
     (roleName) => {
       switch (roleName) {
-        case "Administrador": // ¡Debe ser "Administrador" (con A mayúscula)!
+        case "Administrador":
           navigate("/admin");
           break;
-        case "Operador de Tráfico": // ¡Debe ser "Operador de Tráfico" (con O y T mayúscula y espacio)!
+        case "Operador de Tráfico":
           navigate("/operator");
           break;
-        case "Cliente": // ¡Debe ser "Cliente" (con C mayúscula)!
+        case "Cliente":
           navigate("/client");
           break;
         default:
-          // Si el rol no coincide con ninguna ruta, redirige a la página principal.
-          // Esto podría ser la causa del 404 si el rol no coincide.
           navigate("/");
           break;
       }
@@ -47,8 +44,7 @@ const Login = () => {
     if (error) {
       clearError();
     }
-    // Si el usuario ya está logueado y tiene un rol, redirige
-    if (user && user.rol) {
+    if (user?.rol) {
       redirectToDashboard(user.rol);
     }
   }, [error, clearError, user, redirectToDashboard]);
@@ -56,17 +52,16 @@ const Login = () => {
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
       const loggedInUser = await login(values);
-      if (loggedInUser && loggedInUser.rol) {
+      if (loggedInUser?.rol) {
         redirectToDashboard(loggedInUser.rol);
       } else {
-        // Esto debería activarse si el backend no devuelve un rol, lo cual no debería pasar
         toast.error(
           "No se pudo determinar el rol del usuario. Redirigiendo a la página principal."
         );
         navigate("/");
       }
-    } catch (err) {
-      // Los errores ya los maneja AuthContext con toasts
+    } catch {
+      // Error ya manejado en AuthContext
     } finally {
       setSubmitting(false);
     }
@@ -74,10 +69,18 @@ const Login = () => {
 
   return (
     <div className="login-page-wrapper">
-      <div className="login-container">
-        <div className="login-header">
+      <div
+        className="login-container"
+        role="main"
+        aria-labelledby="login-header"
+      >
+        <div className="login-header" id="login-header">
           <h2>Iniciar sesión</h2>
-          <button className="close-btn" onClick={() => navigate("/")}>
+          <button
+            className="close-btn"
+            onClick={() => navigate("/")}
+            aria-label="Cerrar ventana de inicio de sesión"
+          >
             ×
           </button>
         </div>
@@ -88,7 +91,7 @@ const Login = () => {
           onSubmit={handleSubmit}
         >
           {({ isSubmitting }) => (
-            <Form className="login-form">
+            <Form className="login-form" noValidate>
               <div className="form-group">
                 <label htmlFor="email">Correo electrónico</label>
                 <Field
@@ -97,6 +100,8 @@ const Login = () => {
                   type="email"
                   className="input-field"
                   placeholder="Correo electrónico"
+                  autoComplete="email"
+                  aria-required="true"
                 />
                 <ErrorMessage
                   name="email"
@@ -113,11 +118,16 @@ const Login = () => {
                   type={showPassword ? "text" : "password"}
                   className="input-field"
                   placeholder="Contraseña"
+                  autoComplete="current-password"
+                  aria-required="true"
                 />
                 <button
                   type="button"
                   className="show-password-toggle"
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  aria-label={
+                    showPassword ? "Ocultar contraseña" : "Mostrar contraseña"
+                  }
                 >
                   {showPassword ? "🙈" : "👁️"}
                 </button>
@@ -144,6 +154,9 @@ const Login = () => {
           <span
             className="signup-link"
             onClick={() => navigate("/signup")}
+            role="link"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === "Enter" && navigate("/signup")}
             style={{
               cursor: "pointer",
               color: "blue",

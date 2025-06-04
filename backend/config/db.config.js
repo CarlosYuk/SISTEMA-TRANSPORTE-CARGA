@@ -10,13 +10,16 @@ const pool = new Pool({
   port: process.env.DB_PORT,
 });
 
+// Opcional: conectar y comprobar al inicio, pero no es obligatorio
 pool.connect((err, client, done) => {
   if (err) {
     console.error("Error al conectar a PostgreSQL:", err);
-    return;
+    // Aquí podrías decidir si lanzar error o terminar el proceso para evitar que siga con error
+    process.exit(1);
+  } else {
+    console.log("Conexión a PostgreSQL establecida con éxito");
+    done(); // Liberar cliente (se recomienda usar done() en lugar de client.release() cuando usas pool.connect)
   }
-  console.log("Conexión a PostgreSQL establecida con éxito");
-  client.release();
 });
 
-module.exports = pool; // Exporta el pool directamente, sin un objeto
+module.exports = pool; // Exporta el pool para usarlo en consultas

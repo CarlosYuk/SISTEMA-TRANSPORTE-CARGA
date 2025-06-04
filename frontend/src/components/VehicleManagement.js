@@ -1,4 +1,3 @@
-// frontend/src/components/VehicleManagement.js
 import React, { useState, useEffect, useContext, useCallback } from "react";
 import { AuthContext } from "../context/AuthContext";
 import vehicleService from "../services/vehicleService";
@@ -13,14 +12,12 @@ const VehicleManagement = () => {
   const [selectedVehicle, setSelectedVehicle] = useState(null);
 
   const fetchVehicles = useCallback(async () => {
+    if (!token) return;
     try {
-      const response = await vehicleService.getAllVehicles(token);
-      if (Array.isArray(response.data)) {
-        setVehicles(response.data);
-      } else {
-        console.warn("Formato inesperado en vehículos:", response.data);
-        setVehicles([]);
-      }
+      const data = await vehicleService.getAllVehicles(token);
+      // Si el servicio devuelve data dentro de data (axios), ajusta según corresponda:
+      const list = Array.isArray(data) ? data : data.data || [];
+      setVehicles(list);
     } catch (error) {
       console.error(
         "Error al obtener vehículos:",
@@ -32,17 +29,8 @@ const VehicleManagement = () => {
   }, [token]);
 
   useEffect(() => {
-    const fetchVehicles = async () => {
-      try {
-        const data = await vehicleService.getAllVehicles(token);
-        setVehicles(data);
-      } catch (error) {
-        console.error("Error al obtener vehículos:", error);
-      }
-    };
-
-    if (token) fetchVehicles();
-  });
+    fetchVehicles();
+  }, [fetchVehicles]);
 
   const handleCreateClick = () => {
     setSelectedVehicle(null);
@@ -118,7 +106,7 @@ const VehicleManagement = () => {
             </tr>
           </thead>
           <tbody>
-            {!Array.isArray(vehicles) || vehicles.length === 0 ? (
+            {!vehicles.length ? (
               <tr>
                 <td colSpan="15" className="text-center">
                   No hay vehículos registrados.
@@ -155,11 +143,7 @@ const VehicleManagement = () => {
                       <img
                         src={`${process.env.REACT_APP_API_BASE_URL}/${vehicle.imagen_url}`}
                         alt="Vehículo"
-                        style={{
-                          width: "50px",
-                          height: "50px",
-                          objectFit: "cover",
-                        }}
+                        style={{ width: 50, height: 50, objectFit: "cover" }}
                       />
                     ) : (
                       "No disponible"

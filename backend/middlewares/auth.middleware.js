@@ -1,8 +1,5 @@
 // backend/middlewares/auth.middleware.js
 const jwt = require("jsonwebtoken");
-const User = require("../models/user.model");
-const Role = require("../models/role.model");
-require("dotenv").config();
 
 const authMiddleware = {
   // Middleware para verificar el token JWT
@@ -43,9 +40,7 @@ const authMiddleware = {
           .json({ message: "Acceso denegado. No hay información de rol." });
       }
 
-      // console.log("Rol del usuario:", req.user.nombre_rol); // Para depuración
-      // console.log("Roles permitidos:", allowedRoleNames); // Para depuración
-
+      // Verificamos que el rol del usuario esté en la lista de roles permitidos
       if (allowedRoleNames.includes(req.user.nombre_rol)) {
         next(); // El rol está permitido
       } else {
@@ -54,6 +49,19 @@ const authMiddleware = {
           .json({ message: "Acceso denegado. Rol no autorizado." });
       }
     };
+  },
+
+  // Middleware para permitir Admin y Operador de Tráfico
+  adminOrOperatorAuth: (req, res, next) => {
+    // Aseguramos que el usuario tiene el rol de Administrador o Operador de Tráfico
+    if (
+      req.user &&
+      (req.user.nombre_rol === "Administrador" ||
+        req.user.nombre_rol === "Operador de Tráfico")
+    ) {
+      return next(); // Si el rol es válido, continuamos con la siguiente acción
+    }
+    res.status(403).json({ message: "Acceso denegado. Rol no autorizado." });
   },
 };
 

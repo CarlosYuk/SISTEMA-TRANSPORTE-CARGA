@@ -1,11 +1,15 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/user.controller");
-const authMiddleware = require("../middlewares/auth.middleware"); // ¡Asegúrate de la ruta correcta aquí!
-const { body, validationResult } = require("express-validator"); // Asegúrate de importar validationResult también
+const authMiddleware = require("../middlewares/auth.middleware");
+const { body, validationResult } = require("express-validator");
 
-// Middleware de autorización para administradores
+// Autorización para Admin y Operador de Tráfico
 const adminAuth = authMiddleware.authorize(["Administrador"]);
+const adminOrOperatorAuth = authMiddleware.authorize([
+  "Administrador",
+  "Operador de Tráfico",
+]);
 
 // Validaciones comunes para usuarios
 const userValidationRules = [
@@ -20,9 +24,8 @@ const userValidationRules = [
     .isLength({ max: 100 })
     .withMessage("El apellido no debe exceder los 100 caracteres"),
   body("email").isEmail().withMessage("Debe ser un email válido"),
-  // La contraseña es requerida solo al crear, opcional al actualizar
   body("contrasena")
-    .optional() // Permite que la contraseña sea opcional para actualizaciones
+    .optional()
     .isLength({ min: 6 })
     .withMessage("La contraseña debe tener al menos 6 caracteres"),
   body("telefono")
@@ -41,23 +44,19 @@ const userValidationRules = [
 // Middleware para manejar los resultados de la validación
 const validate = (req, res, next) => {
   const errors = validationResult(req);
-  if (errors.isEmpty()) {
-    return next();
-  }
-  const extractedErrors = [];
-  errors.array().map((err) => extractedErrors.push({ [err.param]: err.msg }));
+  if (errors.isEmpty()) return next();
 
   return res.status(400).json({
-    errors: extractedErrors,
+    errors: errors.array(),
     message: "Errores de validación",
   });
 };
 
 // ====================================================================
-// CONSOLIDACIÓN Y ORDEN CORRECTO DE LAS RUTAS
+// RUTAS DE USUARIOS (ADMIN Y OPERADOR DE TRÁFICO)
 // ====================================================================
 
-// 1. Obtener todos los roles (ruta estática, DEBE IR ANTES DE /:id)
+// Obtener todos los roles (solo Admin)
 router.get(
   "/roles",
   authMiddleware.verifyToken,
@@ -65,33 +64,30 @@ router.get(
   userController.getAllRoles
 );
 
-// 2. Obtener todos los usuarios (ruta estática)
+// Obtener todos los usuarios (Admin y Operador de Tráfico)
 router.get(
   "/",
   authMiddleware.verifyToken,
-  adminAuth,
+  adminOrOperatorAuth,
   userController.getAllUsers
 );
 
-// 3. Crear un nuevo usuario (POST /api/users)
+// Crear un nuevo usuario (Admin)
 router.post(
   "/",
   authMiddleware.verifyToken,
   adminAuth,
-  // Para la creación, la contraseña es obligatoria.
-  // Podemos hacer una validación condicional en el controlador o aquí.
-  // Por ahora, asegúrate de que el frontend siempre envíe una contraseña al crear.
   [
     body("contrasena")
       .notEmpty()
       .withMessage("La contraseña es obligatoria para nuevos usuarios."),
-    ...userValidationRules, // Aplicamos las reglas de validación comunes
+    ...userValidationRules, // Reglas comunes de validación
   ],
-  validate, // Aplica el middleware de validación
+  validate,
   userController.createUser
 );
 
-// 4. Obtener un usuario por ID (ruta dinámica, DEBE IR DESPUÉS DE RUTAS ESTÁTICAS COMO /roles)
+// Obtener un usuario por ID (Admin)
 router.get(
   "/:id",
   authMiddleware.verifyToken,
@@ -99,18 +95,17 @@ router.get(
   userController.getUserById
 );
 
-// 5. Actualizar un usuario existente (PUT /api/users/:id)
+// Actualizar un usuario (Admin y Operador de Tráfico)
 router.put(
   "/:id",
   authMiddleware.verifyToken,
-  adminAuth,
-  // La contraseña es opcional aquí porque userValidationRules ya la marca como optional()
-  userValidationRules, // Aplicamos validaciones comunes
-  validate, // Aplica el middleware de validación
+  adminOrOperatorAuth,
+  userValidationRules,
+  validate,
   userController.updateUser
 );
 
-// 6. Eliminar un usuario (DELETE /api/users/:id)
+// Eliminar un usuario (Admin)
 router.delete(
   "/:id",
   authMiddleware.verifyToken,

@@ -1,12 +1,20 @@
 /* App.css */
+
+/* Variables globales */
 :root {
   --verde-principal: #2e7d32;
   --verde-suave: #81c784;
   --amarillo-suave: #fff176;
   --gris-suave: #f0f4f1;
   --blanco: #ffffff;
+
+  /* Sombras y transiciones */
+  --shadow-light: rgba(0, 0, 0, 0.1);
+  --shadow-hover: rgba(0, 0, 0, 0.2);
+  --transition-fast: 0.3s ease;
 }
 
+/* Reset y base */
 body {
   margin: 0;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -17,6 +25,7 @@ body {
   text-align: center;
 }
 
+/* Navbar */
 .navbar {
   position: fixed;
   top: 0;
@@ -26,7 +35,7 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px var(--shadow-light);
   z-index: 1000;
 }
 
@@ -40,37 +49,45 @@ body {
   margin-left: 1rem;
 }
 
+/* Botones genéricos */
 .btn {
   border-radius: 20px;
   padding: 0.6rem 1.4rem;
   font-size: 0.9rem;
   font-weight: bold;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all var(--transition-fast);
+  box-shadow: 0 2px 4px var(--shadow-light);
 }
 
+/* Botón login */
 .btn.login {
   background-color: var(--verde-suave);
   border: none;
-  color: #fff;
+  color: var(--blanco);
 }
 
-.btn.login:hover {
+.btn.login:hover,
+.btn.login:focus {
   background-color: var(--verde-principal);
+  outline: none;
 }
 
+/* Botón register */
 .btn.register {
   background-color: transparent;
   border: 2px solid var(--verde-principal);
   color: var(--verde-principal);
 }
 
-.btn.register:hover {
+.btn.register:hover,
+.btn.register:focus {
   background-color: var(--verde-principal);
-  color: white;
+  color: var(--blanco);
+  outline: none;
 }
 
+/* Hero Section */
 .hero-section {
   background-image: linear-gradient(
       rgba(46, 125, 50, 0.6),
@@ -81,7 +98,7 @@ body {
   background-size: cover;
   background-position: center;
   height: 100vh;
-  color: white;
+  color: var(--blanco);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -98,17 +115,18 @@ body {
 
 .hero-content p {
   font-size: 1.2rem;
-  color: #fefefe;
   margin-top: 1rem;
+  color: var(--blanco);
 }
 
+/* Secciones */
 .section {
   padding: 4rem 2rem;
   background: linear-gradient(180deg, var(--gris-suave) 0%, var(--blanco) 100%);
 }
 
 .section.alt {
-  background-color: #ffffff;
+  background-color: var(--blanco);
 }
 
 .section h2 {
@@ -117,6 +135,7 @@ body {
   margin-bottom: 1rem;
 }
 
+/* Cards container */
 .card-container {
   display: flex;
   justify-content: center;
@@ -125,20 +144,25 @@ body {
   margin-top: 2rem;
 }
 
+/* Cards individuales */
 .card {
   background: var(--blanco);
   border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px var(--shadow-light);
   padding: 2rem;
   max-width: 300px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
 
-.card:hover {
+.card:hover,
+.card:focus-within {
   transform: translateY(-8px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 20px var(--shadow-hover);
+  outline: none;
 }
 
+/* Footer */
 .footer {
   background-color: var(--verde-principal);
   color: var(--amarillo-suave);
@@ -147,6 +171,7 @@ body {
   font-weight: 500;
 }
 
+/* Animaciones */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -157,7 +182,8 @@ body {
     transform: translateY(0);
   }
 }
-/* Asegúrate de que los estilos básicos de App.css incluyan esto para los modales */
+
+/* React Modal - estilos base */
 .ReactModal__Overlay {
   opacity: 0;
   transition: opacity 200ms ease-in-out;
@@ -183,7 +209,7 @@ body {
   min-width: 300px;
   padding: 30px;
   border-radius: 8px;
-  background: #fff;
+  background: var(--blanco);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   outline: none;
 }

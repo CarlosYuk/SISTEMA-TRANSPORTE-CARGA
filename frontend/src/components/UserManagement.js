@@ -1,15 +1,14 @@
-// frontend/src/components/UserManagement.js
-import React, { useState, useEffect, useContext, useCallback } from "react"; // Importa useCallback
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import userService from "../services/userService";
 import { AuthContext } from "../context/AuthContext";
 import { toast } from "react-toastify";
 import UserFormModal from "./UserFormModal";
 import "./UserManagement.css";
-// Configura el elemento root de la aplicación para el modal
-import Modal from "react-modal"; // Asegúrate de importar Modal aquí también para configurar setAppElement
-Modal.setAppElement("#root"); // Asume que tu index.html tiene <div id="root"></div>
 
-const UserManagement = () => {
+import Modal from "react-modal";
+Modal.setAppElement("#root");
+
+const UserManagement = ({ restrictAdminActions = false }) => {
   const { token } = useContext(AuthContext);
   const [users, setUsers] = useState([]);
   const [roles, setRoles] = useState([]);
@@ -18,10 +17,8 @@ const UserManagement = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [currentSelectedUser, setCurrentSelectedUser] = useState(null);
 
-  // Envuelve fetchUsers en useCallback
   const fetchUsers = useCallback(async () => {
     if (!token) return;
-
     try {
       setLoading(true);
       const data = await userService.getAllUsers(token);
@@ -36,29 +33,25 @@ const UserManagement = () => {
     } finally {
       setLoading(false);
     }
-  }, [token]); // 'token' es una dependencia de fetchUsers
+  }, [token]);
 
-  // Envuelve fetchRoles en useCallback
   const fetchRoles = useCallback(async () => {
     if (!token) return;
-
     try {
-      // Nota: Asegúrate que esta ruta /api/users/roles esté definida en tu backend/routes/user.routes.js
-      // Por ejemplo: router.get("/roles", authMiddleware.verifyToken, adminAuth, userController.getAllRoles);
       const data = await userService.getAllRoles(token);
       setRoles(data);
     } catch (err) {
       toast.error("Error al cargar los roles.");
       console.error(err);
     }
-  }, [token]); // 'token' es una dependencia de fetchRoles
+  }, [token]);
 
   useEffect(() => {
     if (token) {
       fetchUsers();
       fetchRoles();
     }
-  }, [token, fetchUsers, fetchRoles]); // Las funciones ahora son estables gracias a useCallback
+  }, [token, fetchUsers, fetchRoles]);
 
   const openCreateModal = () => {
     setCurrentSelectedUser(null);
@@ -78,6 +71,18 @@ const UserManagement = () => {
   const handleSaveUser = async (userData) => {
     try {
       if (currentSelectedUser) {
+        // Si restrictAdminActions y se intenta modificar rol a administrador o modificar usuario administrador, bloquear
+        if (
+          restrictAdminActions &&
+          (userData.id_rol ===
+            roles.find((r) => r.nombre_rol === "Administrador")?.id_rol ||
+            currentSelectedUser.nombre_rol === "Administrador")
+        ) {
+          toast.error(
+            "No tienes permisos para modificar usuarios administradores."
+          );
+          return;
+        }
         await userService.updateUser(
           currentSelectedUser.id_usuario,
           userData,
@@ -85,6 +90,24 @@ const UserManagement = () => {
         );
         toast.success("Usuario actualizado con éxito");
       } else {
+        // Si restrictAdminActions y se intenta crear usuario con rol administrador, bloquear
+        if (
+          restrictAdminActions &&
+          userData.id_rol ===
+            roles.find((r) => r.nombre_rol === "Administrador")?.id_rol
+        ) {
+          toast.error(
+            "No tienes permisos para crear usuarios administradores."
+          );
+          return;
+        }
+
+        // Si el rol es "Operador de Tráfico", solo puede crear usuarios con el rol de "Cliente"
+        if (restrictAdminActions && userData.id_rol !== "Cliente") {
+          toast.error("Solo puedes crear usuarios con el rol 'Cliente'.");
+          return;
+        }
+
         await userService.createUser(userData, token);
         toast.success("Usuario creado con éxito");
       }
@@ -100,7 +123,11 @@ const UserManagement = () => {
     }
   };
 
-  const handleDeleteUser = async (userId) => {
+  const handleDeleteUser = async (userId, userRole) => {
+    if (restrictAdminActions && userRole === "Administrador") {
+      toast.error("No tienes permisos para eliminar usuarios administradores.");
+      return;
+    }
     if (window.confirm("¿Estás seguro de que quieres eliminar este usuario?")) {
       try {
         await userService.deleteUser(userId, token);
@@ -128,9 +155,15 @@ const UserManagement = () => {
     );
   }
 
+  // Filtrar roles para formulario si restrictAdminActions (no mostrar "Administrador")
+  const filteredRoles = restrictAdminActions
+    ? roles.filter((r) => r.nombre_rol !== "Administrador")
+    : roles;
+
   return (
     <div className="user-management-container">
       <h3>Gestión de Usuarios</h3>
+      {/* Solo mostrar botón crear si no restringido o mostrarlo con roles filtrados */}
       <button onClick={openCreateModal} className="add-user-button">
         Crear Nuevo Usuario
       </button>
@@ -157,18 +190,20 @@ const UserManagement = () => {
                 <td>{u.apellido}</td>
                 <td>{u.email}</td>
                 <td>{u.telefono}</td>
-                <td>{u.rol}</td>
+                <td>{u.rol}</td> {/* Aquí se muestra el rol */}
                 <td>{u.estado}</td>
                 <td>
                   <button
                     onClick={() => openEditModal(u)}
                     className="edit-button"
+                    disabled={restrictAdminActions && u.rol === "Administrador"}
                   >
                     Editar
                   </button>
                   <button
-                    onClick={() => handleDeleteUser(u.id_usuario)}
+                    onClick={() => handleDeleteUser(u.id_usuario, u.rol)}
                     className="delete-button"
+                    disabled={restrictAdminActions && u.rol === "Administrador"}
                   >
                     Eliminar
                   </button>
@@ -186,7 +221,7 @@ const UserManagement = () => {
         onRequestClose={closeModal}
         onSave={handleSaveUser}
         initialData={currentSelectedUser}
-        roles={roles}
+        roles={filteredRoles}
       />
     </div>
   );

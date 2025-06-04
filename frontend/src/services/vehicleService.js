@@ -1,72 +1,88 @@
-// frontend/src/services/vehicleService.js
-import axios from "axios";
+import axios from "./axiosConfig"; // Usa la instancia configurada con baseURL
 
-const API_URL =
-  process.env.REACT_APP_API_BASE_URL || "http://localhost:5000/api";
+const API_URL = "/api/vehicles";
 
-const getAllVehicles = async (token) => {
-  const response = await axios.get(`${API_URL}/vehicles`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return response.data;
-};
-
-const getVehicleById = async (id, token) => {
-  const response = await axios.get(`${API_URL}/vehicles/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return response.data;
-};
-
-const createVehicle = async (vehicleData, token) => {
-  const response = await axios.post(`${API_URL}/vehicles`, vehicleData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "multipart/form-data",
-    },
-  });
-  return response.data;
-};
-
-const updateVehicle = async (id, vehicleData, token) => {
-  const response = await axios.put(`${API_URL}/vehicles/${id}`, vehicleData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "multipart/form-data",
-    },
-  });
-  return response.data;
-};
-
-const deleteVehicle = async (id, token) => {
-  const response = await axios.delete(`${API_URL}/vehicles/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return response.data;
-};
-
-const getAvailableDrivers = async (token) => {
-  const response = await axios.get(`${API_URL}/vehicles/drivers`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return response.data;
-};
+const authHeaders = (token, isMultipart = false) => ({
+  headers: {
+    Authorization: `Bearer ${token}`,
+    ...(isMultipart && { "Content-Type": "multipart/form-data" }),
+  },
+});
 
 const vehicleService = {
-  getAllVehicles,
-  getVehicleById,
-  createVehicle,
-  updateVehicle,
-  deleteVehicle,
-  getAvailableDrivers,
+  getAllVehicles: async (token) => {
+    try {
+      const response = await axios.get(API_URL, authHeaders(token));
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching all vehicles:", error);
+      throw error;
+    }
+  },
+
+  getVehicleById: async (id, token) => {
+    try {
+      const response = await axios.get(`${API_URL}/${id}`, authHeaders(token));
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching vehicle with ID ${id}:`, error);
+      throw error;
+    }
+  },
+
+  createVehicle: async (vehicleData, token) => {
+    try {
+      const response = await axios.post(
+        API_URL,
+        vehicleData,
+        authHeaders(token, true)
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error creating vehicle:", error);
+      throw error;
+    }
+  },
+
+  updateVehicle: async (id, vehicleData, token) => {
+    try {
+      const response = await axios.put(
+        `${API_URL}/${id}`,
+        vehicleData,
+        authHeaders(token, true)
+      );
+      return response.data;
+    } catch (error) {
+      console.error(`Error updating vehicle with ID ${id}:`, error);
+      throw error;
+    }
+  },
+
+  deleteVehicle: async (id, token) => {
+    try {
+      const response = await axios.delete(
+        `${API_URL}/${id}`,
+        authHeaders(token)
+      );
+      return response.data;
+    } catch (error) {
+      console.error(`Error deleting vehicle with ID ${id}:`, error);
+      throw error;
+    }
+  },
+
+  getAvailableDrivers: async (token) => {
+    try {
+      const response = await axios.get(
+        `${API_URL}/drivers`,
+        authHeaders(token)
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching available drivers:", error);
+      throw error;
+    }
+  },
 };
 
 export default vehicleService;

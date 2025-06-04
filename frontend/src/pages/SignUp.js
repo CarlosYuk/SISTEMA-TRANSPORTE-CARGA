@@ -1,15 +1,13 @@
-// frontend/src/pages/SignUp.js
 import React, { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-//import { toast } from "react-toastify";
 import { AuthContext } from "../context/AuthContext";
 import "../SignUp.css";
 
 const signupSchema = Yup.object().shape({
   username: Yup.string().trim().required("El nombre es obligatorio"),
-  apellido: Yup.string().trim().required("El apellido es obligatorio"), // Añadido 'apellido'
+  apellido: Yup.string().trim().required("El apellido es obligatorio"),
   email: Yup.string()
     .email("Email inválido")
     .required("El correo electrónico es obligatorio"),
@@ -19,8 +17,8 @@ const signupSchema = Yup.object().shape({
   confirmPassword: Yup.string()
     .oneOf([Yup.ref("password"), null], "Las contraseñas no coinciden")
     .required("Confirma tu contraseña"),
-  telefono: Yup.string() // Añadido 'telefono' - puedes añadir validación de formato si lo necesitas
-    .matches(/^[0-9]{10}$/, "El teléfono debe tener 10 dígitos numéricos") // Ejemplo de validación para 10 dígitos
+  telefono: Yup.string()
+    .matches(/^[0-9]{10}$/, "El teléfono debe tener 10 dígitos numéricos")
     .required("El teléfono es obligatorio"),
 });
 
@@ -30,27 +28,22 @@ const SignUp = () => {
 
   useEffect(() => {
     if (error) {
-      // El toast ya se muestra desde AuthContext, pero puedes añadir lógica aquí si quieres
-      clearError(); // Limpia el error después de mostrarlo
+      clearError();
     }
   }, [error, clearError]);
 
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
-      // El backend espera 'nombre', 'apellido', 'email', 'contrasena', 'telefono'
       await signup({
-        username: values.username, // Mapea 'username' de Formik a 'nombre' del backend
+        username: values.username,
         apellido: values.apellido,
         email: values.email,
-        password: values.password, // Mapea 'password' de Formik a 'contrasena' del backend
+        password: values.password,
         telefono: values.telefono,
-        // No enviamos id_rol, el backend lo asigna por defecto (cliente)
       });
-      // toast.success("¡Registro exitoso! Por favor, inicia sesión."); // Ya lo maneja AuthContext
-      navigate("/login"); // Redirige al login después de un registro exitoso
-    } catch (err) {
-      // El error ya se maneja en AuthContext y con toast
-      // console.error("Error de registro en componente:", err); // Puedes dejarlo para depuración
+      navigate("/login");
+    } catch {
+      // Error gestionado en AuthContext
     } finally {
       setSubmitting(false);
     }
@@ -58,10 +51,18 @@ const SignUp = () => {
 
   return (
     <div className="signup-page-wrapper">
-      <div className="signup-container">
-        <div className="signup-header">
+      <div
+        className="signup-container"
+        role="main"
+        aria-labelledby="signup-header"
+      >
+        <div className="signup-header" id="signup-header">
           <h2>Crear una cuenta</h2>
-          <button className="close-btn" onClick={() => navigate("/")}>
+          <button
+            className="close-btn"
+            onClick={() => navigate("/")}
+            aria-label="Cerrar ventana de registro"
+          >
             ×
           </button>
         </div>
@@ -79,7 +80,7 @@ const SignUp = () => {
           onSubmit={handleSubmit}
         >
           {({ isSubmitting }) => (
-            <Form className="signup-form">
+            <Form className="signup-form" noValidate>
               <div className="form-group">
                 <label htmlFor="username">Nombre</label>
                 <Field
@@ -88,6 +89,8 @@ const SignUp = () => {
                   type="text"
                   className="input-field"
                   placeholder="Tu nombre"
+                  autoComplete="given-name"
+                  aria-required="true"
                 />
                 <ErrorMessage
                   name="username"
@@ -104,6 +107,8 @@ const SignUp = () => {
                   type="text"
                   className="input-field"
                   placeholder="Tu apellido"
+                  autoComplete="family-name"
+                  aria-required="true"
                 />
                 <ErrorMessage
                   name="apellido"
@@ -120,6 +125,8 @@ const SignUp = () => {
                   type="email"
                   className="input-field"
                   placeholder="ejemplo@dominio.com"
+                  autoComplete="email"
+                  aria-required="true"
                 />
                 <ErrorMessage
                   name="email"
@@ -136,6 +143,8 @@ const SignUp = () => {
                   type="password"
                   className="input-field"
                   placeholder="Mínimo 6 caracteres"
+                  autoComplete="new-password"
+                  aria-required="true"
                 />
                 <ErrorMessage
                   name="password"
@@ -152,6 +161,8 @@ const SignUp = () => {
                   type="password"
                   className="input-field"
                   placeholder="Repite tu contraseña"
+                  autoComplete="new-password"
+                  aria-required="true"
                 />
                 <ErrorMessage
                   name="confirmPassword"
@@ -168,6 +179,8 @@ const SignUp = () => {
                   type="text"
                   className="input-field"
                   placeholder="Ej. 0987654321"
+                  autoComplete="tel"
+                  aria-required="true"
                 />
                 <ErrorMessage
                   name="telefono"
@@ -192,6 +205,9 @@ const SignUp = () => {
           <span
             className="login-link"
             onClick={() => navigate("/login")}
+            role="link"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === "Enter" && navigate("/login")}
             style={{
               cursor: "pointer",
               color: "blue",

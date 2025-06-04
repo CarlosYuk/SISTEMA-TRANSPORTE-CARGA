@@ -13,6 +13,7 @@ const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes"); // <--- ¡Importa las rutas de usuario!
 const vehicleRoutes = require("./routes/vehicle.routes");
 const roleRoutes = require("./routes/role.routes");
+
 // Middlewares
 app.use(cors());
 app.use(express.json()); // Para parsear el body de las peticiones JSON
@@ -22,6 +23,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes); // <--- ¡Usa las rutas de usuario!
 app.use("/api/vehicles", vehicleRoutes); // <--- Nueva
 app.use("/api/roles", roleRoutes); // Asegurarse de que esté
+
 
 // Manejador de errores global
 app.use((err, req, res, next) => {

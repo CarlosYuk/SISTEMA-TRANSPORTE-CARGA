@@ -1,4 +1,3 @@
-// backend/controllers/user.controller.js
 const userModel = require("../models/user.model");
 const pool = require("../config/db.config"); // Asegúrate de importar el pool
 const bcrypt = require("bcryptjs");
@@ -9,7 +8,14 @@ const userController = {
   getAllUsers: async (req, res, next) => {
     try {
       const users = await userModel.findAllUsers();
-      res.json(users);
+
+      // Solo mostrar los usuarios con rol de "Cliente" para operadores de tráfico
+      if (req.user.nombre_rol === "Operador de Tráfico") {
+        const filteredUsers = users.filter((user) => user.rol === "Cliente");
+        return res.json(filteredUsers);
+      }
+
+      res.json(users); // Si no es operador de tráfico, devuelve todos los usuarios
     } catch (error) {
       next(error);
     }
@@ -29,7 +35,7 @@ const userController = {
     }
   },
 
-  // Crear un nuevo usuario (solo para Admin)
+  // Crear un nuevo usuario (solo para Admin y Operadores de Tráfico)
   createUser: async (req, res, next) => {
     // Validación de entrada (ejemplo con express-validator, si lo usas)
     const errors = validationResult(req);
@@ -46,6 +52,13 @@ const userController = {
         return res.status(400).json({ message: "El email ya está registrado" });
       }
 
+      // Solo permitir "Operador de Tráfico" crear usuarios con rol de "Cliente"
+      if (req.user.nombre_rol === "Operador de Tráfico" && id_rol !== 3) {
+        return res
+          .status(403)
+          .json({ message: "Solo puedes crear usuarios 'Cliente'." });
+      }
+
       const newUser = await userModel.create({
         nombre,
         apellido,
@@ -55,6 +68,8 @@ const userController = {
         id_rol,
         estado: estado || "Activo", // Por defecto 'Activo' si no se especifica
       });
+
+      // Incluimos el rol y otros detalles en la respuesta
       res
         .status(201)
         .json({ message: "Usuario creado con éxito", user: newUser });

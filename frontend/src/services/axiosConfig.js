@@ -1,8 +1,11 @@
-// frontend/src/services/axiosConfig.js
 import axios from "axios";
 
-// La URL base de tu backend
-// Si tu backend está en localhost:5000, esta es la configuración
-axios.defaults.baseURL = "http://localhost:5000";
+const baseURL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
 
-export default axios;
+const axiosInstance = axios.create({
+  baseURL,
+  // Puedes agregar headers comunes aquí, por ejemplo:
+  // headers: { "Content-Type": "application/json" },
+});
+
+export default axiosInstance;

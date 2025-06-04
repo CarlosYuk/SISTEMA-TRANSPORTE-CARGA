@@ -1,5 +1,4 @@
-// Ejemplo: frontend/src/pages/ClientDashboard.js
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -7,22 +6,34 @@ function ClientDashboard() {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (!user) {
+      navigate("/login"); // Redirigir si no está autenticado
+    }
+  }, [user, navigate]);
+
   const handleLogout = () => {
     logout();
-    navigate("/login"); // O a la home, según tu preferencia
+    navigate("/login");
   };
 
+  if (!user) return null; // O un loader si quieres
+
+  const { nombre, apellido, rol, email } = user;
+
   return (
-    <div>
+    <div className="client-dashboard">
       <h1>Panel de Cliente</h1>
       <p>
-        Bienvenido, {user ? user.nombre + " " + user.apellido : "Usuario"} (Rol:{" "}
-        {user ? user.rol : "Desconocido"})
+        Bienvenido, {nombre} {apellido} (Rol: {rol})
       </p>
-      <p>Tu email: {user ? user.email : ""}</p>
-      <button onClick={handleLogout}>Cerrar Sesión</button>
-      {/* Aquí el contenido específico del cliente */}
+      <p>Email: {email}</p>
+      <button onClick={handleLogout} className="btn btn-logout">
+        Cerrar Sesión
+      </button>
+      {/* Aquí puedes agregar el contenido específico para el cliente */}
     </div>
   );
 }
+
 export default ClientDashboard;
