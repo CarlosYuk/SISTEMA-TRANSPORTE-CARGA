@@ -1,5 +1,6 @@
 // frontend/src/App.js
 import React from "react";
+
 import {
   BrowserRouter as Router,
   Routes,
@@ -17,6 +18,7 @@ import SignupPage from "./pages/SignUp";
 import AdminDashboard from "./pages/AdminDashboard";
 import OperatorDashboard from "./pages/OperatorDashboard";
 import ClientDashboard from "./pages/ClientDashboard";
+
 
 function PrivateRoute({ children, allowedRoleNames }) {
   const { user, loading } = React.useContext(AuthContext);
